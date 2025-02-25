@@ -89,7 +89,13 @@ public class ReturnToSender {
                             continue;
                         }
 
-                        var playerServer = previousServers.containsKey(player) ? proxy.getServer(previousServers.get(player)).orElse(server) : server;
+                        var address = player.getVirtualHost().orElse(null);
+                        var host = address != null ? address.getHostName() : null;
+
+                        var forcedHost = host != null ? proxy.getConfiguration().getForcedHosts().get(host) : null;
+
+                        var playerServer = previousServers.containsKey(player) ? proxy.getServer(previousServers.get(player)).orElse(server) :
+                                forcedHost != null ? proxy.getServer(forcedHost.get(0)).orElse(server) : server;
 
                         if (shouldReconnect || player.hasPermission("returntosender.bypass")) {
                             player.sendActionBar(Component.text("Attempting reconnection to server..."));
